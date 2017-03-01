@@ -12,14 +12,15 @@ using namespace std;
 
 struct BinNode{
     char token;
-    Node* left = NULL, *right = NULL;
+    BinNode* left = NULL, *right = NULL;
 };
 
 char* getPostfix(char *infix);
 bool isOperator(char token);
 bool isLeft(char op);
 int oppr(char op);
-BinNode* getExprTree(stack &postfix);
+BinNode* getExprTree(Stack &postfix);
+void printPrefix(BinNode* root);
 
 int main(){
     char input[128];
@@ -33,12 +34,19 @@ int main(){
         }
         
         char* postfix = getPostfix(input);
+        cout << "Postfix: " << postfix << endl;
         Stack stack;
         for(int i=0; postfix[i]; i++){
-            stack.push(postfix[i]);
+            if(postfix[i] != ' '){
+                stack.push(postfix[i]);
+            }
         }
         delete[] postfix;
+        cout << endl;
         BinNode* treeRoot = getExprTree(stack);
+        cout << "Prefix: ";
+        printPrefix(treeRoot);
+        cout << endl;
     }
     return 0;
 }
@@ -141,5 +149,16 @@ BinNode* getExprTree(Stack &postfix){
         BinNode* binNode = new BinNode();
         binNode->token = postfix.pop();
         return binNode;
+    }
+}
+
+void printPrefix(BinNode* root){
+    if(isOperator(root->token)){
+        cout << root->token << ' ';
+        printPrefix(root->left);
+        printPrefix(root->right);
+    }
+    else{
+        cout << root->token << ' ';
     }
 }
