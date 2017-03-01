@@ -49,14 +49,28 @@ int main(){
             }
         }
         delete[] postfix;
-        cout << endl;
-        BinNode* treeRoot = getExprTree(stack);
-        printPrefix(treeRoot);
-        cout << endl;
-        printPostfix(treeRoot);
-        cout << endl;
-        printInfix(treeRoot);
-        cout << endl;
+        BinNode* treeRoot = getExprTree(stack); //Expression tree
+        cout << "Enter \"prefix,\" \"postfix,\" or \"infix.\"" << endl;
+        cin.getline(input, 128);
+        //Convert to lower case:
+        for(int i=0; input[i]; i++){
+            input[i] = tolower(input[i]);
+        }
+        if(strcmp(input, "prefix") == 0){
+            printPrefix(treeRoot);
+            cout << endl;
+        }
+        else if(strcmp(input, "postfix") == 0){
+            printPostfix(treeRoot);
+            cout << endl;
+        }
+        else if(strcmp(input, "infix") == 0){
+            printInfix(treeRoot);
+            cout << endl;
+        }
+        else{
+            cout << "Command not recognized." << endl;
+        }
     }
     return 0;
 }
