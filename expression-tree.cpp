@@ -17,10 +17,14 @@ struct BinNode{
 
 char* getPostfix(char *infix);
 bool isOperator(char token);
+bool isOperator(BinNode* binNode);
 bool isLeft(char op);
 int oppr(char op);
+int oppr(BinNode* binNode);
 BinNode* getExprTree(Stack &postfix);
 void printPrefix(BinNode* root);
+void printPostfix(BinNode* root);
+void printInfix(BinNode* root);
 
 int main(){
     char input[128];
@@ -34,7 +38,6 @@ int main(){
         }
         
         char* postfix = getPostfix(input);
-        cout << "Postfix: " << postfix << endl;
         Stack stack;
         for(int i=0; postfix[i]; i++){
             if(postfix[i] != ' '){
@@ -44,8 +47,11 @@ int main(){
         delete[] postfix;
         cout << endl;
         BinNode* treeRoot = getExprTree(stack);
-        cout << "Prefix: ";
         printPrefix(treeRoot);
+        cout << endl;
+        printPostfix(treeRoot);
+        cout << endl;
+        printInfix(treeRoot);
         cout << endl;
     }
     return 0;
@@ -161,4 +167,48 @@ void printPrefix(BinNode* root){
     else{
         cout << root->token << ' ';
     }
+}
+
+void printPostfix(BinNode* root){
+    if(isOperator(root->token)){
+        printPostfix(root->left);
+        printPostfix(root->right);
+        cout << root->token << ' ';
+    }
+    else{
+        cout << root->token << ' ';
+    }
+}
+
+void printInfix(BinNode* root){
+    if(isOperator(root->token)){
+        if(isOperator(root->left) && oppr(root->left) < oppr(root->token)){
+            cout << "( ";
+            printInfix(root->left);
+            cout << " ) ";
+        }
+        else{
+            printInfix(root->left);
+        }
+        cout << root->token << ' ';
+        if(isOperator(root->right) && oppr(root->right) < oppr(root->token)){
+            cout << "( ";
+            printInfix(root->right);
+            cout << " ) ";
+        }
+        else{
+            printInfix(root->right);
+        }
+    }
+    else{
+        cout << root->token << ' ';
+    }
+}
+
+int oppr(BinNode* binNode){
+    return oppr(binNode->token);
+}
+
+bool isOperator(BinNode* binNode){
+    return isOperator(binNode->token);
 }
