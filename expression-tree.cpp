@@ -1,6 +1,10 @@
 /*
  * A program that converts an infix expression into a postfix expression.
  * Supports multi-digit numbers, +, -, *, /, ^, and parentheses.
+ * The program then builds an expression tree and allows the user
+ * to display the original expression in infix, postfix, or prefix
+ * notation (though prefix is the only notation into which the conversion
+ * is not redundant).
  * Author: Artur Drobot
  * Feb. 2017
  */
