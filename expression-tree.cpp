@@ -6,29 +6,36 @@
  * notation (though prefix is the only notation into which the conversion
  * is not redundant).
  * Author: Artur Drobot
- * Feb. 2017
+ * Mar 2, 2017
  */
 #include <iostream>
 #include "Stack.hpp"
+#include "StrStack.hpp"
 #include <cstring>
 
 using namespace std;
 
 struct BinNode{
-    char token;
+    char* token;
     BinNode* left = NULL, *right = NULL;
+    ~BinNode(){
+        delete[] token;
+    }
 };
 
 char* getPostfix(char *infix);
 bool isOperator(char token);
+bool isOperator(char* token);
 bool isOperator(BinNode* binNode);
 bool isLeft(char op);
 int oppr(char op);
+int oppr(char* op);
 int oppr(BinNode* binNode);
-BinNode* getExprTree(Stack &postfix);
+BinNode* getExprTree(StrStack &postfix);
 void printPrefix(BinNode* root);
 void printPostfix(BinNode* root);
 void printInfix(BinNode* root);
+void deleteBinTree(BinNode* root); //Implement!
 
 int main(){
     char input[128];
@@ -42,10 +49,25 @@ int main(){
         }
         
         char* postfix = getPostfix(input);
-        Stack stack;
-        for(int i=0; postfix[i]; i++){
-            if(postfix[i] != ' '){
-                stack.push(postfix[i]);
+        StrStack stack;
+        int i = 0;
+        while(postfix[i]){
+            if(postfix[i] == ' '){
+                i++;
+                continue;
+            }
+            if(isdigit(postfix[i])){
+                char num[10];
+                int j = 0;
+                while(isdigit(postfix[i])){
+                    num[j++] = postfix[i++];
+                }
+                num[j++] = '\0';
+                stack.push(num);
+            }
+            else{//Operator
+                char op[2] = {postfix[i++], '\0'};
+                stack.push(op);
             }
         }
         delete[] postfix;
@@ -77,7 +99,7 @@ int main(){
 
 char* getPostfix(char *infix){
     Stack stack;
-    char* postfix = new char[strlen(infix) + 1];
+    char* postfix = new char[((strlen(infix)+1)*3)]; //Output may be without spaces; allocate enough memory.
     int indexin = 0, indexpost = 0;
     //The shunting-yard algorithm:
     while(infix[indexin]){
@@ -159,7 +181,7 @@ int oppr(char op){
     return -1;
 }
 
-BinNode* getExprTree(Stack &postfix){
+BinNode* getExprTree(StrStack &postfix){
     //Returns pointer to root of expression tree representing the given postfix expression.
     //(The top of the stack should be the right-most element.)
     if(isOperator(postfix.peek())){
@@ -200,19 +222,19 @@ void printPostfix(BinNode* root){
 
 void printInfix(BinNode* root){
     if(isOperator(root->token)){
-        if(isOperator(root->left) && oppr(root->left) < oppr(root->token)){
+        if(isOperator(root->left)){
             cout << "( ";
             printInfix(root->left);
-            cout << " ) ";
+            cout << ") ";
         }
         else{
             printInfix(root->left);
         }
         cout << root->token << ' ';
-        if(isOperator(root->right) && oppr(root->right) < oppr(root->token)){
+        if(isOperator(root->right)){
             cout << "( ";
             printInfix(root->right);
-            cout << " ) ";
+            cout << ") ";
         }
         else{
             printInfix(root->right);
@@ -229,4 +251,12 @@ int oppr(BinNode* binNode){
 
 bool isOperator(BinNode* binNode){
     return isOperator(binNode->token);
+}
+
+int oppr(char* token){
+    return oppr(*token);
+}
+
+bool isOperator(char* token){
+    return isOperator(*token);
 }
