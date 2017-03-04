@@ -35,7 +35,7 @@ BinNode* getExprTree(StrStack &postfix);
 void printPrefix(BinNode* root);
 void printPostfix(BinNode* root);
 void printInfix(BinNode* root);
-void deleteBinTree(BinNode* root); //Implement!
+void deleteBinTree(BinNode* root);
 
 int main(){
     char input[128];
@@ -93,6 +93,7 @@ int main(){
         else{
             cout << "Command not recognized." << endl;
         }
+        deleteBinTree(treeRoot);
     }
     return 0;
 }
@@ -259,4 +260,12 @@ int oppr(char* token){
 
 bool isOperator(char* token){
     return isOperator(*token);
+}
+
+void deleteBinTree(BinNode* root){
+    if(root != 0){
+        deleteBinTree(root->left);
+        deleteBinTree(root->right);
+        delete root;
+    }
 }
